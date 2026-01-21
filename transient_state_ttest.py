@@ -110,8 +110,9 @@ def test(input_file):
         print(tests)
 
 input_files = ['/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/sc/scdrs/disorders/adhd2025/wang_2025/adhd2025.wang_2025_neocortex.scdrs.score.txt',
+               '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/sc/scdrs/disorders/adhd2022/wang_2025/adhd2022.wang_2025_neocortex.scdrs.score.txt',
                '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/sc/scdrs/structural_factors/cortical_expansion/wang_2025/cortical_expansion.wang_2025_neocortex.scdrs.score.txt']
 
-for file in input_files: test(file)
-
-
+for file in input_files: 
+    print(file)
+    test(file)
