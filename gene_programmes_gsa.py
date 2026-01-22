@@ -16,14 +16,14 @@ replication_weights = pd.read_table(
 ).T
 replication_weights.columns = [f'F{i+1}' for i in range(replication_k)]
 
-gene_sets = pd.read_table('./braun_2023_s4.txt')
+gene_sets = pd.read_table('./braun_2023_s4.txt', index_col = 0)
 ref = pd.read_table('/home/yh464/rds/rds-rb643-ukbiobank2/Data_Users/yh464/params/genes_ref.txt', index_col = 'LABEL')
 neuronal_like_ipc_genes = [gene for gene in gene_sets.index[:138] if gene in ref.index]
 rg_like_ipc_genes = [gene for gene in gene_sets.index[138:] if gene in ref.index]
 neuronal_like_ipc_genes = ref.loc[neuronal_like_ipc_genes, 'GENE'].values
 rg_like_ipc_genes = ref.loc[rg_like_ipc_genes, 'GENE'].values
 
-def gene_set_enrichment(weights, gene_set, n_perm = 10000):
+def gene_set_enrichment(weights, gene_set, n_perm = 100000):
     n_overlap = weights.index.intersection(gene_set).size
     mean_weight = weights.loc[weights.index.intersection(gene_set),:].mean(axis = 0).values
     perm_weights = np.stack([
@@ -31,7 +31,8 @@ def gene_set_enrichment(weights, gene_set, n_perm = 10000):
         for _ in range(n_perm)
     ], axis = 0)
     p_values = (mean_weight > perm_weights).mean(axis = 0)
-    out = pd.DataFrame({'mean_weight': mean_weight, 'p_value': p_values}, index = weights.columns)
+    p_values = np.minimum(p_values, 1 - p_values) * 2  # two-sided
+    out = pd.DataFrame({'mean_weight': mean_weight, 'perm_mean': perm_weights.mean(axis = 0), 'p_value': p_values}, index = weights.columns)
     print(out)
     return out
 
