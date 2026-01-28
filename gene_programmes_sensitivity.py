@@ -49,6 +49,14 @@ ipcenn_weights.columns = [f'F{i+1}' for i in range(ipcenn_k)]
 n_overlapping_genes = ipcenn_weights.index.intersection(cnmf_weights.index).size
 print(f'Number of overlapping genes between IPC-EN and main dataset: {n_overlapping_genes}')
 
+magma_k = 16; magma_dt = '0_1'; magma_factor_order = [f'F{i}' for i in [12,15,5,7,14,1,6,11,3,2,8,10,13,14,9,16]]
+mamga_weights = pd.read_table(
+    '/rds/project/rds-Nl99R8pHODQ/multiomics/programmes/cnmf/wang_2025/wang_2025_magma_genes/' +
+    f'wang_2025_magma_genes.spectra.k_{magma_k}.dt_{magma_dt}.consensus.txt', index_col = 0).T
+mamga_weights.columns = [f'F{i+1}' for i in range(magma_k)]
+n_overlapping_genes = mamga_weights.index.intersection(cnmf_weights.index).size
+print(f'Number of overlapping genes between MAGMA-only and main dataset: {n_overlapping_genes}')
+
 sensitivity_k = [9, 10, 16, 36]; sensitivity_dt = ['0_1','0_1','0_15', '0_2']
 sensitivity_weights = [
     pd.read_table(
@@ -72,6 +80,14 @@ for test_weights,k in zip(sensitivity_weights, sensitivity_k):
     corr = corr.loc[:, ipcenn_factor_order].iloc[dendrogram_res['leaves'], :]
     out_prefix = f'{output_dir}/ipcenn_corr_k{ipcenn_k}_to_k{k}'
     fig = plt.figure(figsize = (8,8))
+    sns.heatmap(corr, cmap = 'vlag', center = 0, yticklabels = True, xticklabels = True, square = True)
+    fig.savefig(f'{out_prefix}.pdf', bbox_inches = 'tight')
+    plt.close()
+
+    corr = pd.concat([test_weights.corrwith(mamga_weights[f'F{i+1}']).to_frame(name = f'F{i+1}') for i in range(magma_k)], axis = 1)
+    corr = corr.loc[:, magma_factor_order].iloc[dendrogram_res['leaves'], :]
+    out_prefix = f'{output_dir}/magma_corr_k{magma_k}_to_k{k}'
+    fig = plt.figure(figsize = (10,10))
     sns.heatmap(corr, cmap = 'vlag', center = 0, yticklabels = True, xticklabels = True, square = True)
     fig.savefig(f'{out_prefix}.pdf', bbox_inches = 'tight')
     plt.close()
