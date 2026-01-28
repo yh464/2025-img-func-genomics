@@ -72,7 +72,7 @@ for test_weights,k in zip(sensitivity_weights, sensitivity_k):
     fig.savefig(f'{out_prefix}.pdf', bbox_inches = 'tight')
     plt.close()
 
-replication_k = 9; replication_dt = '0_1'
+replication_k = 10; replication_dt = '0_1'
 replication_weights = pd.read_table(
     '/rds/project/rds-Nl99R8pHODQ/multiomics/programmes/cnmf/polioudakis_2019/neocx_wang_2025_genes/'+
     f'neocx_wang_2025_genes.spectra.k_{replication_k}.dt_{replication_dt}.consensus.txt',
