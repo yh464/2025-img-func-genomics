@@ -32,11 +32,6 @@ def extract_smr(df, gene_set):
     print(out)
     return out
 
-def extract_sig(df, p_threshold = 0.05):
-    df = df.loc[df.qtl == 'psychencode_eqtl',:]
-    df = df.loc[(df.q < p_threshold) & (df.p_heidi > .01),:]
-    return df
-
 for smr_file, df in zip(smr_files, smr_df):
     print(smr_file)
     print('Neuronal-like IPC genes:')
@@ -50,11 +45,21 @@ for smr_file, df in zip(smr_files, smr_df):
     print('Significant transcription factors:')
     extract_smr(df, sig_tf)
 
-smr_sig = [ extract_sig(df, 0.1) for df in smr_df ]
+def extract_sig(df, p_threshold = 0.05):
+    # df = df.loc[df.qtl == 'psychencode_eqtl',:]
+    df = df.loc[df.qtl != 'eur_mqtl', :]
+    df = df.loc[(df.q < p_threshold) & (df.p_heidi > .01),:]
+    return df
+
+smr_sig = [ extract_sig(df, 0.05) for df in smr_df ]
 genes_sig = np.union1d(
-    np.intersect1d(smr_sig[0]['gene'].values, smr_sig[1]['gene'].values),
-    np.intersect1d(smr_sig[0]['gene'].values, smr_sig[2]['gene'].values)
+    np.intersect1d(smr_sig[0]['probe'].values, smr_sig[1]['probe'].values),
+    np.intersect1d(smr_sig[0]['probe'].values, smr_sig[2]['probe'].values)
 )
 
-smr_overlap = pd.concat([ df.loc[(df['gene'].isin(genes_sig)) & (df.qtl == 'psychencode_eqtl'),['beta', 'gene']
-    ].set_index('gene').rename(columns = {'beta': df.iloc[0,0]}) for df in smr_df ], axis = 1)
+smr_overlap = pd.concat([df.loc[df['probe'].isin(genes_sig),['probe','gene', 'qtl']].set_index('probe')] + 
+    # [ df.loc[(df['gene'].isin(genes_sig)) & (df.qtl == 'psychencode_eqtl'),['beta', 'gene']
+    [ df.loc[(df['probe'].isin(genes_sig)) & (df.qtl != 'eur_mqtl'),['beta', 'probe']
+    # [ df.loc[(df['probe'].isin(genes_sig)),['beta', 'probe']
+    ].set_index('probe').rename(columns = {'beta': df.iloc[0,0]}) for df in smr_df ], axis = 1).sort_values(['qtl','gene'])
+smr_overlap

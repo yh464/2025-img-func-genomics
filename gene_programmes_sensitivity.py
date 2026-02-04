@@ -49,7 +49,7 @@ ipcenn_weights.columns = [f'F{i+1}' for i in range(ipcenn_k)]
 n_overlapping_genes = ipcenn_weights.index.intersection(cnmf_weights.index).size
 print(f'Number of overlapping genes between IPC-EN and main dataset: {n_overlapping_genes}')
 
-magma_k = 16; magma_dt = '0_1'; magma_factor_order = [f'F{i}' for i in [12,15,5,7,14,1,6,11,3,2,8,10,13,14,9,16]]
+magma_k = 16; magma_dt = '0_1'; magma_factor_order = [f'F{i}' for i in [12,15,5,7,14,1,6,11,3,2,8,10,13,4,9,16]]
 mamga_weights = pd.read_table(
     '/rds/project/rds-Nl99R8pHODQ/multiomics/programmes/cnmf/wang_2025/wang_2025_magma_genes/' +
     f'wang_2025_magma_genes.spectra.k_{magma_k}.dt_{magma_dt}.consensus.txt', index_col = 0).T
