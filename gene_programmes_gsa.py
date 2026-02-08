@@ -83,3 +83,11 @@ overlap_q01 = [x for x in overlap_q01.str.replace('eregulons.','').str.replace('
 overlap_q01 = ref.loc[overlap_q01, 'GENE'].values
 print(overlap_q01)
 overlap_01_enrichment = gene_set_enrichment(cnmf_weights, overlap_q01)
+
+ipsc_diff = open('/rds/project/rds-Nl99R8pHODQ/multiomics/gene_set/jerber_2021_ipscdiff.txt').read().splitlines()
+ipsc_positive = ipsc_diff[0].split()[1:]
+ipsc_positive_overlap = cnmf_weights.index.intersection(ipsc_positive)
+ipsc_negative = ipsc_diff[1].split()[1:]
+ipsc_negative_overlap = cnmf_weights.index.intersection(ipsc_negative)
+ipsc_positive_enrichment = gene_set_enrichment(cnmf_weights, ipsc_positive)
+ipsc_negative_enrichment = gene_set_enrichment(cnmf_weights, ipsc_negative)
