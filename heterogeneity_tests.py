@@ -29,12 +29,12 @@ if not os.path.exists(sumstats):
     ce_clumped[['SNP','A1']].to_csv(sumstats_temp, sep = '\t', index = False)
 
 cases_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/alpha_omega_adhd'
-cases_recode = f'{outdir}/adhd_recode.txt'
+cases_recode = f'{outdir}/adhd_recode.raw'
 if not os.path.exists(cases_recode):
     os.system(f'{plink} --bfile {cases_bed} --extract {sumstats_temp} --reference-allele {sumstats_temp} --recode A --out {cases_recode[:-4]}')
 
 ctrls_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/alpha_omega_noadhd'
-ctrls_recode = f'{outdir}/noadhd_recode.txt'
+ctrls_recode = f'{outdir}/noadhd_recode.raw'
 if not os.path.exists(ctrls_recode): 
     os.system(f'{plink} --bfile {ctrls_bed} --extract {sumstats_temp} --reference-allele {sumstats_temp} --recode A --out {ctrls_recode[:-4]}')
 
@@ -45,4 +45,4 @@ if not os.path.exists(buhmbox_script):
     os.system(f'wget https://software.broadinstitute.org/mpg/buhmbox/data/buhmbox_v0.38/buhmbox.R -O {buhmbox_script}')
 
 buhmbox_out = f'{outdir}/buhmbox_ce_adhd'
-os.system(f'Rscript {buhmbox_script} {sumstats} {cases_recode}.raw {ctrls_recode}.raw YY N Y {buhmbox_out} {pc_file}')
+os.system(f'Rscript {buhmbox_script} {sumstats} {cases_recode} {ctrls_recode} YY N Y {buhmbox_out} {pc_file}')
