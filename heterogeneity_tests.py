@@ -45,4 +45,4 @@ if not os.path.exists(buhmbox_script):
     os.system(f'wget https://software.broadinstitute.org/mpg/buhmbox/data/buhmbox_v0.38/buhmbox.R -O {buhmbox_script}')
 
 buhmbox_out = f'{outdir}/buhmbox_ce_adhd'
-os.system(f'Rscript {buhmbox_script} {sumstats} {cases_recode} {ctrls_recode} YY N Y {buhmbox_out} {pc_file}')
+os.system(f'Rscript {buhmbox_script} {sumstats} {cases_recode}.raw {ctrls_recode}.raw YY N Y {buhmbox_out} {pc_file}')
