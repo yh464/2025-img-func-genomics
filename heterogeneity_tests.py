@@ -20,13 +20,13 @@ os.makedirs(outdir, exist_ok = True)
 # BUHMBOX analysis
 sumstats = f'{outdir}/buhmbox_input_ce.txt'
 sumstats_temp = f'{tmpdir}/buhmbox_input_ce.txt'
-if not os.path.exists(sumstats):
-    ce_clump = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/clump/structural_factors/cortical_expansion_5e-08.clumped', usecols = ['SNP'])
-    ce_gwas = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/gwa/structural_factors/cortical_expansion.fastGWA', usecols = ['SNP','A1','AF1','BETA'])
-    ce_clumped = pd.merge(ce_clump, ce_gwas, on = 'SNP', how = 'inner')
-    ce_clumped['OR'] = np.exp(ce_clumped['BETA']) # BUHMBOX only accepts OR as input
-    ce_clumped[['SNP','A1','AF1','OR']].to_csv(sumstats, sep = '\t', index = False)
-    ce_clumped[['SNP','A1']].to_csv(sumstats_temp, sep = '\t', index = False)
+# if not os.path.exists(sumstats):
+ce_clump = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/clump/structural_factors/cortical_expansion_1e-06.clumped', usecols = ['SNP'])
+ce_gwas = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/gwa/structural_factors/cortical_expansion.fastGWA', usecols = ['SNP','A1','AF1','BETA'])
+ce_clumped = pd.merge(ce_clump, ce_gwas, on = 'SNP', how = 'inner')
+ce_clumped['OR'] = np.exp(ce_clumped['BETA']) # BUHMBOX only accepts OR as input
+ce_clumped[['SNP','A1','AF1','OR']].to_csv(sumstats, sep = '\t', index = False)
+ce_clumped[['SNP','A1']].to_csv(sumstats_temp, sep = '\t', index = False)
 
 cases_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/alpha_omega_adhd'
 cases_recode = f'{outdir}/adhd_recode.raw'
@@ -46,3 +46,21 @@ if not os.path.exists(buhmbox_script):
 
 buhmbox_out = f'{outdir}/buhmbox_ce_adhd'
 os.system(f'Rscript {buhmbox_script} {sumstats} {cases_recode} {ctrls_recode} YY N Y {buhmbox_out} {pc_file}')
+os.system(f'cat {buhmbox_out}.BBrst')
+
+cases_iwes3_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/iwes3_adhd'
+cases_iwes3_recode = f'{outdir}/iwes3_adhd_recode.raw'
+if not os.path.exists(cases_iwes3_recode):
+    os.system(f'{plink} --bfile {cases_iwes3_bed} --extract {sumstats_temp} --reference-allele {sumstats_temp} --recode A --out {cases_iwes3_recode[:-4]}')
+
+ctrls_iwes3_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/iwes3_noadhd'
+ctrls_iwes3_recode = f'{outdir}/iwes3_noadhd_recode.raw'
+if not os.path.exists(ctrls_iwes3_recode):
+    os.system(f'{plink} --bfile {ctrls_iwes3_bed} --extract {sumstats_temp} --reference-allele {sumstats_temp} --recode A --out {ctrls_iwes3_recode[:-4]}') 
+
+pc_file = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/iwes3.eigenvec'
+iwes3_buhmbox_out = f'{outdir}/buhmbox_ce_iwes3'
+os.system(f'Rscript {buhmbox_script} {sumstats} {cases_iwes3_recode} {ctrls_iwes3_recode} YY N Y {iwes3_buhmbox_out} {pc_file}')
+os.system(f'cat {iwes3_buhmbox_out}.BBrst')
+
+# CLIP-X analysis
