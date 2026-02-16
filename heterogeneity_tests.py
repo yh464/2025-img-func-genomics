@@ -20,13 +20,13 @@ os.makedirs(outdir, exist_ok = True)
 # BUHMBOX analysis
 sumstats = f'{outdir}/buhmbox_input_ce.txt'
 sumstats_temp = f'{tmpdir}/buhmbox_input_ce.txt'
-# if not os.path.exists(sumstats):
-ce_clump = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/clump/structural_factors/cortical_expansion_1e-06.clumped', usecols = ['SNP'])
-ce_gwas = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/gwa/structural_factors/cortical_expansion.fastGWA', usecols = ['SNP','A1','AF1','BETA'])
-ce_clumped = pd.merge(ce_clump, ce_gwas, on = 'SNP', how = 'inner')
-ce_clumped['OR'] = np.exp(ce_clumped['BETA']) # BUHMBOX only accepts OR as input
-ce_clumped[['SNP','A1','AF1','OR']].to_csv(sumstats, sep = '\t', index = False)
-ce_clumped[['SNP','A1']].to_csv(sumstats_temp, sep = '\t', index = False)
+if not os.path.exists(sumstats):
+    ce_clump = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/clump/structural_factors/cortical_expansion_1e-06.clumped', usecols = ['SNP'])
+    ce_gwas = pd.read_table('/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/gwa/structural_factors/cortical_expansion.fastGWA', usecols = ['SNP','A1','AF1','BETA'])
+    ce_clumped = pd.merge(ce_clump, ce_gwas, on = 'SNP', how = 'inner')
+    ce_clumped['OR'] = np.exp(ce_clumped['BETA']) # BUHMBOX only accepts OR as input
+    ce_clumped[['SNP','A1','AF1','OR']].to_csv(sumstats, sep = '\t', index = False)
+    ce_clumped[['SNP','A1']].to_csv(sumstats_temp, sep = '\t', index = False)
 
 cases_bed = '/rds/project/rds-Q6dKROTNf6s/Data_Users/yh464/params/bed_spark/alpha_omega_adhd'
 cases_recode = f'{outdir}/adhd_recode.raw'
